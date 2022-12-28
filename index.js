@@ -25,6 +25,11 @@ async function run(){
             const result = await postCollections.insertOne(post)
             res.send(result);
         })
+        app.get('/posts', async(req,res)=>{
+            const query = {}
+            const result = await postCollections.find(query).toArray();
+            res.send(result)
+        })
     }
     finally{
 
