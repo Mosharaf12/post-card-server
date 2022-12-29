@@ -19,6 +19,8 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run(){
     try{
         const postCollections = client.db('postCard').collection('postCollection')
+        const commentCollections = client.db('postCard').collection('commentsCollection')
+        const aboutCollection = client.db('postCard').collection('aboutCollection')
 
         app.post('/posts', async(req,res)=>{
             const post = req.body;
@@ -29,6 +31,36 @@ async function run(){
             const query = {}
             const result = await postCollections.find(query).toArray();
             res.send(result)
+        })
+        app.get('/posts/:id', async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id: ObjectId(id)}
+            const result = await postCollections.findOne(query)
+            res.send(result);
+        })
+        // commentsections 
+        app.post('/comments', async(req,res)=>{
+            const comment =req.body;
+            const result = await commentCollections.insertOne(comment);
+            res.send(result);
+        })
+        app.get('/comments', async(req,res)=>{
+            const query = {};
+            const result = await commentCollections.find(query).toArray();
+            res.send(result);
+        })
+        app.post('/about', async(req, res) => {
+            const aboutBody = req.body;
+            const result = await aboutCollection.insertOne(aboutBody)
+            res.send(result)
+        })
+
+        app.get('/about/:email', async(req, res) => {
+            const email = req.params.email;
+            const query = {user_email: email};
+            const result = await aboutCollection.findOne(query);
+            res.send(result)
+            
         })
         app.put('/postlike/:todo', async(req, res) => {
             const todo = req.params.todo;
