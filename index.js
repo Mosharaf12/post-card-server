@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 5000
 
@@ -29,6 +29,28 @@ async function run(){
             const query = {}
             const result = await postCollections.find(query).toArray();
             res.send(result)
+        })
+        app.put('/postlike/:todo', async(req, res) => {
+            const todo = req.params.todo;
+            
+            const id = req.query.id;
+            const filter = {_id: ObjectId(id)};
+            const options = {upsert: true};
+
+            //for find the current like with exact id
+            const findPost = await postCollections.findOne(filter);
+            const oldLike = parseInt(findPost.countLike)
+            //end
+
+              
+                const updatedDoc = {
+                    $set: {
+                        "countLike": oldLike + 1
+                    }
+                }
+                const result = await postCollections.updateOne(filter, updatedDoc, options)
+                res.send(result)
+
         })
     }
     finally{
