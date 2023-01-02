@@ -29,7 +29,12 @@ async function run(){
         })
         app.get('/posts', async(req,res)=>{
             const query = {}
-            const result = await postCollections.find(query).toArray();
+            const result = await postCollections.find(query).sort({"date" : 1}).toArray();
+            res.send(result)
+        })
+        app.get('/sortPosts', async(req,res)=>{
+            const query = {}
+            const result = await postCollections.find(query).sort({"countLike" : -1}).limit(3).toArray();
             res.send(result)
         })
         app.get('/posts/:id', async(req,res)=>{
